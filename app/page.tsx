@@ -1,7 +1,7 @@
 import Image from "next/image";
 import content from "./components/verbiage/content";
 import Link from "next/link";
-
+import Chabot from "./components/Chabot";
 export default function Home() {
   return (
     <main className="height-100 flex center-vh">
@@ -24,6 +24,7 @@ export default function Home() {
           </Link>
         </div>
       </div>
+      <Chabot />
     </main>
   );
 }

@@ -1,0 +1,29 @@
+Site summary for portfolio-site
+
+Pages (routes):
+- / (Home) — app/page.tsx
+- /about (About) — app/about/page.tsx
+- /technology (Technologies) — app/technology/page.tsx
+
+API routes (server):
+- /api/chatbot — app/api/chatbot/route.ts (server route that calls OpenAI)
+- /api/chatbot-data — app/api/chatbot-data/route.ts (returns consolidated chatbot prompt file)
+
+External links referenced:
+- https://github.com/kcdhopkins (GitHub)
+- https://www.linkedin.com/in/keyairius-hopkins-4b7b984a/ (LinkedIn)
+
+Key components:
+ - app/components/Chabot.tsx — client component that fetches `/api/chatbot-data` and manages conversation state; it calls `/api/chatbot` for AI responses
+- app/components/WorkHistory.tsx — renders `content.workHistory` items
+- app/components/TechBadges.tsx — displays technology badges (icons from /public)
+- app/components/verbiage/content.ts — central source of site text, contact and resume data
+
+Assets:
+- /profile-pic.jpg — profile image used on Home
+- /github.png, /linked.png — social icons
+- Multiple SVG/PNG icons under /public used for tech badges (e.g., /html5.svg, /react.svg, /nextjs.svg)
+
+Purpose / notes for chatbot use:
+- Use the `chatbot_data/*.md` files (resume_overview.md, work_history.md, skills.md, contact.md, education.md) as canonical sources for answering personal/resume questions.
+- Use API route descriptions above when asked about dynamic features or integrations with OpenAI.
