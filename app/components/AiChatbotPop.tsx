@@ -9,7 +9,7 @@ type Props = {
     onSend: (text: string) => void | Promise<void>
 }
 
-export default function AiChatbotPop({ messages, onSend }: Props): JSX.Element {
+export default function AiChatbotPop({ messages, onSend }: Props): React.ReactElement {
     const [message, setMessage] = useState<string>("")
     const [collapsed, setCollapsed] = useState<boolean>(false)
     const containerRef = useRef<HTMLDivElement | null>(null)
