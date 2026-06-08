@@ -105,3 +105,19 @@ Task for assistant:
 - If asked for résumé formatting or export, use the above sections as content.
 
 End.
+
+---ACTION FORMAT (for client integration)---
+If the user asks the assistant to navigate/open a page on the site (for example: "take me to the about page"), the assistant MUST output a single JSON object on the first line of its reply describing the action, using exactly this shape:
+
+{"action":"navigate","href":"/about"}
+
+After that JSON line the assistant MAY include a normal conversational reply on subsequent lines. The client will parse the first line as JSON and perform navigation if the `href` is an allowed internal path.
+
+Examples:
+
+{"action":"navigate","href":"/about"}
+Opening the About page for you now.
+
+Security note: clients must validate `href` against an allowed internal route whitelist and must NOT navigate to arbitrary external URLs.
+
+---END ACTION FORMAT---

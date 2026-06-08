@@ -24,7 +24,6 @@ export default function Home() {
           </Link>
         </div>
       </div>
-      <Chabot />
     </main>
   );
 }
