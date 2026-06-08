@@ -15,7 +15,7 @@ function getClient() {
 const rateLimitStore = new Map<string, { count: number; windowStart: number; lastRequest: number }>()
 const MAX_PER_MINUTE = 10 // max requests per IP per minute
 const COOLDOWN_MS = 1500 // minimum ms between consecutive requests from same IP
-const MAX_PROMPT_CHARS = 1000 // max characters allowed in the final prompt
+const MAX_PROMPT_CHARS = 20000 // max characters allowed in the final prompt
 
 async function handleRequestWithPrompt(prompt: string) {
     const client = getClient()
