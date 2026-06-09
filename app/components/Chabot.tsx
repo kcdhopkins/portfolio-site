@@ -11,6 +11,64 @@ export default function Chabot(): JSX.Element {
         { role: "bot", text: "Hello, is there anything I can help you with related to Keyairius?" },
     ])
 
+    // Return stored user id if present, otherwise null. Server will create id on first POST.
+    function getOrCreateUserId(): string | null {
+        try {
+            const id = localStorage.getItem("kj_user_id")
+            return id ?? null
+        } catch (e) {
+            return null
+        }
+    }
+
+    async function saveMessagesToDb(id: string | null, msgs: Message[] | any) {
+        try {
+            let body: any = {}
+            if (id) body.id = id
+
+            // If msgs looks like an array of role/text messages, convert to paired format
+            if (Array.isArray(msgs) && msgs.length >= 2 && msgs[0].role && msgs[1].role) {
+                const userMsg = msgs.find((m: any) => m.role === "user")
+                const botMsg = msgs.find((m: any) => m.role === "bot")
+                const pair = { bot: botMsg?.text ?? "", user: userMsg?.text ?? "", timestamp: new Date().toISOString() }
+                body.messages = [pair]
+            } else if (Array.isArray(msgs) && msgs.length > 0 && msgs[0].bot !== undefined) {
+                // already paired array
+                body.messages = msgs
+            } else if (msgs && msgs.bot !== undefined) {
+                body.messages = [msgs]
+            } else {
+                body.messages = []
+            }
+
+            // debug: log outgoing conversation POST
+            // eslint-disable-next-line no-console
+            console.debug("POST /api/conversations ->", body)
+            const res = await fetch("/api/conversations", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(body),
+            })
+
+            const data = await res.json().catch(() => ({}))
+            // debug: log response
+            // eslint-disable-next-line no-console
+            console.debug("/api/conversations response ->", data)
+            // Prefer storing the database _id if returned (canonical DB identifier)
+            const dbId = data?.conversation?._id ?? data?.id
+            if (dbId) {
+                try {
+                    localStorage.setItem("kj_user_id", String(dbId))
+                } catch (e) {
+                    // ignore storage errors
+                }
+            }
+        } catch (e) {
+            // ignore DB errors for now
+            console.error("Failed saving conversation:", e)
+        }
+    }
+
     async function handleSend(userText: string) {
         // build a transcript including prior messages and the new user message
         const transcriptParts: string[] = []
@@ -54,6 +112,12 @@ export default function Chabot(): JSX.Element {
                             const remaining = lines.slice(1).join("\n").trim()
                             const botText = remaining || `Opening ${parsed.href}`
                             setMessages((prev) => [...prev, { role: "bot", text: botText }])
+                            // persist the two newest messages (user + assistant)
+                            const id = getOrCreateUserId()
+                            await saveMessagesToDb(id, [
+                                { role: "user", text: userText },
+                                { role: "bot", text: botText },
+                            ])
                             // navigate
                             router.push(parsed.href)
                             return
@@ -64,7 +128,19 @@ export default function Chabot(): JSX.Element {
                 // ignore JSON parse errors and fall back to showing full reply
             }
 
-            setMessages((prev) => [...prev, { role: "bot", text: String(reply) }])
+            const replyText = String(reply)
+            setMessages((prev) => [...prev, { role: "bot", text: replyText }])
+
+            // persist the new user + bot pair to DB
+            try {
+                const id = getOrCreateUserId()
+                await saveMessagesToDb(id, [
+                    { role: "user", text: userText },
+                    { role: "bot", text: replyText },
+                ])
+            } catch (e) {
+                // swallow
+            }
         } catch (err) {
             console.error("Error generating AI response:", err)
             setMessages((prev) => [...prev, { role: "bot", text: "Sorry, I couldn't get a response right now." }])
