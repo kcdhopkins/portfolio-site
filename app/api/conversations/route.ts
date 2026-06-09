@@ -63,23 +63,56 @@ export async function POST(request: Request) {
 
             // Upsert so we create the conversation if the provided id doesn't match an existing doc
             const update = { $push: { messages: { $each: toInsert } }, $setOnInsert: { createdAt: new Date(), id } }
-            const res = await col.updateOne(filter, update, { upsert: true })
+            try {
+                const res = await col.updateOne(filter, update, { upsert: true })
+                // eslint-disable-next-line no-console
+                console.debug("/api/conversations updateOne result:", res)
+            } catch (e: any) {
+                // eslint-disable-next-line no-console
+                console.error("/api/conversations updateOne error:", e?.message ?? e)
+                return new Response(JSON.stringify({ error: "DB update failed", details: String(e?.message ?? e) }), { status: 500, headers: { "Content-Type": "application/json" } })
+            }
 
-            const doc = await col.findOne(filter)
-            return new Response(JSON.stringify({ id, conversation: doc }), { status: 200, headers: { "Content-Type": "application/json" } })
+            try {
+                const doc = await col.findOne(filter)
+                return new Response(JSON.stringify({ id, conversation: doc }), { status: 200, headers: { "Content-Type": "application/json" } })
+            } catch (e: any) {
+                // eslint-disable-next-line no-console
+                console.error("/api/conversations findOne error:", e?.message ?? e)
+                return new Response(JSON.stringify({ error: "DB read failed", details: String(e?.message ?? e) }), { status: 500, headers: { "Content-Type": "application/json" } })
+            }
         }
 
         // No id provided: create a new conversation document and return its _id
-        const insertRes = await col.insertOne({ messages: toInsert, createdAt: new Date() })
+        let insertRes: any
+        try {
+            insertRes = await col.insertOne({ messages: toInsert, createdAt: new Date() })
+            // eslint-disable-next-line no-console
+            console.debug("/api/conversations insertedId:", insertRes.insertedId)
+        } catch (e: any) {
+            // eslint-disable-next-line no-console
+            console.error("/api/conversations insertOne error:", e?.message ?? e)
+            return new Response(JSON.stringify({ error: "DB insert failed", details: String(e?.message ?? e) }), { status: 500, headers: { "Content-Type": "application/json" } })
+        }
 
         let doc = null
         try {
             doc = await col.findOne({ _id: new ObjectId(String(insertRes.insertedId)) })
         } catch (e) {
-
-            doc = await col.findOne({ _id: insertRes.insertedId })
+            // fallback: try using insertedId directly
+            // eslint-disable-next-line no-console
+            console.debug("/api/conversations findOne fallback, error:", e)
+            try {
+                doc = await col.findOne({ _id: insertRes.insertedId })
+            } catch (e2: any) {
+                // eslint-disable-next-line no-console
+                console.error("/api/conversations fallback findOne error:", e2?.message ?? e2)
+                return new Response(JSON.stringify({ error: "DB read failed", details: String(e2?.message ?? e2) }), { status: 500, headers: { "Content-Type": "application/json" } })
+            }
         }
 
+        // eslint-disable-next-line no-console
+        console.debug("/api/conversations found doc:", doc)
         return new Response(JSON.stringify({ id: String(insertRes.insertedId), conversation: doc }), { status: 200, headers: { "Content-Type": "application/json" } })
     } catch (err: any) {
         // eslint-disable-next-line no-console

@@ -50,10 +50,23 @@ export default function Chabot(): JSX.Element {
                 body: JSON.stringify(body),
             })
 
-            const data = await res.json().catch(() => ({}))
+            const text = await res.text().catch(() => "")
+            let data: any = {}
+            try {
+                data = text ? JSON.parse(text) : {}
+            } catch (e) {
+                data = { raw: text }
+            }
             // debug: log response
             // eslint-disable-next-line no-console
-            console.debug("/api/conversations response ->", data)
+            console.debug("/api/conversations response ->", res.status, data)
+
+            if (!res.ok) {
+                // surface server error to client console
+                // eslint-disable-next-line no-console
+                console.error("/api/conversations returned error:", res.status, data)
+                return
+            }
             // Prefer storing the database _id if returned (canonical DB identifier)
             const dbId = data?.conversation?._id ?? data?.id
             if (dbId) {
