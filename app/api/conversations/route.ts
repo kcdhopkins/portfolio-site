@@ -16,8 +16,15 @@ export async function POST(request: Request) {
             return new Response(JSON.stringify({ error: "No messages provided" }), { status: 400, headers: { "Content-Type": "application/json" } })
         }
 
-        const db = await getDb()
-        const col = db.collection("conversations")
+        let col: any
+        try {
+            const db = await getDb()
+            col = db.collection("conversations")
+        } catch (e: any) {
+            // eslint-disable-next-line no-console
+            console.error("/api/conversations DB connection error:", e?.message ?? e)
+            return new Response(JSON.stringify({ error: "DB unavailable", details: String(e) }), { status: 503, headers: { "Content-Type": "application/json" } })
+        }
 
         const pairs: MessagePair[] = []
 
