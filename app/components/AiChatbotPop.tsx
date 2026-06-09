@@ -11,7 +11,8 @@ type Props = {
 
 export default function AiChatbotPop({ messages, onSend }: Props): React.ReactElement {
     const [message, setMessage] = useState<string>("")
-    const [collapsed, setCollapsed] = useState<boolean>(false)
+    // start minimized, then automatically open after 5 seconds
+    const [collapsed, setCollapsed] = useState<boolean>(true)
     const containerRef = useRef<HTMLDivElement | null>(null)
     const endRef = useRef<HTMLDivElement | null>(null)
 
@@ -34,6 +35,14 @@ export default function AiChatbotPop({ messages, onSend }: Props): React.ReactEl
             if (containerRef.current) containerRef.current.scrollTop = containerRef.current.scrollHeight
         }
     }, [messages.length])
+
+    // Auto-open chat 5s after mount if it's still collapsed
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setCollapsed(false)
+        }, 5000)
+        return () => clearTimeout(timer)
+    }, [])
 
     // If collapsed, show a circular restore button in the same corner.
     if (collapsed) {
