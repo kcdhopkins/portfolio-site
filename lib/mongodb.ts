@@ -1,6 +1,8 @@
 import { MongoClient } from "mongodb"
 
-const uriTemplate = process.env.MONGODB_URI_TEMPLATE
+const DEFAULT_URI_TEMPLATE = "mongodb+srv://kcdhopkins:<db_password>@kj-database.is2bs.mongodb.net/ai-message-history?appName=ai-message-history"
+const uriTemplate: string = process.env.MONGODB_URI_TEMPLATE ?? DEFAULT_URI_TEMPLATE
+
 function buildUri(password?: string) {
     if (!password) throw new Error("MONGODB_PASSWORD not set in environment")
     return uriTemplate.replace("<db_password>", encodeURIComponent(password))
