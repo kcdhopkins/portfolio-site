@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "./components/Header";
+import Footer from "./components/Footer";
 import Chabot from "./components/Chabot";
 
 const geistSans = Geist({
@@ -15,8 +16,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Senior Software Engineer",
-  description: "Senior Software Engineer with 10+ years of experience",
+  title: "Keyairius Hopkins | Senior Fullstack Engineer",
+  description:
+    "Senior Fullstack Engineer with 10+ years building React, TypeScript, and Node applications at scale — currently Senior/Lead Frontend Engineer at CVS Health.",
 };
 
 export default function RootLayout({
@@ -29,10 +31,11 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="text-black">
+      <body className="flex min-h-full flex-col bg-slate-950 text-slate-200">
         <Header />
+        <div className="flex flex-1 flex-col">{children}</div>
+        <Footer />
         <Chabot />
-        {children}
       </body>
     </html>
   );
