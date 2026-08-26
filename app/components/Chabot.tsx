@@ -10,6 +10,7 @@ export default function Chabot(): JSX.Element {
     const [messages, setMessages] = useState<Message[]>([
         { role: "bot", text: "Hello, is there anything I can help you with related to Keyairius?" },
     ])
+    const [isSending, setIsSending] = useState<boolean>(false)
 
     // Return stored user id if present, otherwise null. Server will create id on first POST.
     function getOrCreateUserId(): string | null {
@@ -95,6 +96,7 @@ export default function Chabot(): JSX.Element {
 
         // append user message to UI immediately
         setMessages((prev) => [...prev, { role: "user", text: userText }])
+        setIsSending(true)
 
         try {
             const body = { prompt: transcriptParts.join("\n\n") }
@@ -157,12 +159,14 @@ export default function Chabot(): JSX.Element {
         } catch (err) {
             console.error("Error generating AI response:", err)
             setMessages((prev) => [...prev, { role: "bot", text: "Sorry, I couldn't get a response right now." }])
+        } finally {
+            setIsSending(false)
         }
     }
 
     return (
         <div className="chabot-root">
-            <AiChatbotPop messages={messages} onSend={handleSend} />
+            <AiChatbotPop messages={messages} onSend={handleSend} isSending={isSending} />
         </div>
     )
 }

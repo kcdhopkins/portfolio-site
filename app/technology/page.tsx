@@ -1,25 +1,21 @@
 import TechBadges from "../components/TechBadges";
 import content from "../components/verbiage/content";
 
-const Home: React.FC = () => {
-
+const Technology: React.FC = () => {
     return (
-        <main className="pad" >
-            <div className="flex-c center-v">
-                <div style={{ maxWidth: "1020px" }}>
-                    <div className="flex-r center-h">
-                        <div className="font-bold-1">Technologies</div>
-                    </div>
-                    <div>
-                        <div className="paragraph-font-1">{content.technology}</div>
-                    </div>
-                    <div className="pad-t">
-                        <TechBadges />
-                    </div>
-                </div>
+        <main className="mx-auto max-w-4xl px-5 py-16">
+            <div className="mb-10 text-center">
+                <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-400">
+                    Skills &amp; Tools
+                </p>
+                <h1 className="text-3xl font-bold text-slate-50 sm:text-4xl">Technologies</h1>
+                <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-slate-400">
+                    {content.technology}
+                </p>
             </div>
+            <TechBadges />
         </main>
     );
-}
+};
 
-export default Home;
+export default Technology;
