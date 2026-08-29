@@ -79,20 +79,6 @@ const Modal: React.FC<ModalProps> = ({ setShowModal }) => {
                         Contact Me
                     </Link>
                 </div>
-
-                <div className="mt-auto pt-6">
-                    <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-500">
-                        Other Projects
-                    </p>
-                    <Link
-                        href="https://zen-torvalds-515ad2.netlify.app/"
-                        target="_blank"
-                        onClick={close}
-                        className="block rounded-xl px-4 py-3 text-sm font-medium text-slate-300 hover:bg-slate-900"
-                    >
-                        Timezone Converter ↗
-                    </Link>
-                </div>
             </div>
         </div>,
         document.body
