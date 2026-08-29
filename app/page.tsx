@@ -1,9 +1,11 @@
 import Image from "next/image";
 import content from "./components/verbiage/content";
 import Link from "next/link";
+import OtherProjects from "./components/OtherProjects";
 
 export default function Home() {
   return (
+    <>
     <main className="relative flex min-h-[80vh] items-center justify-center overflow-hidden px-5 py-16">
       <div className="glow-blob left-1/2 top-0 h-[420px] w-[420px] -translate-x-1/2 bg-blue-600/30" />
       <div className="glow-blob bottom-0 right-1/4 h-[300px] w-[300px] bg-cyan-500/20" />
@@ -85,5 +87,7 @@ export default function Home() {
         </div>
       </div>
     </main>
+    <OtherProjects />
+    </>
   );
 }

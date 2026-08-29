@@ -177,5 +177,11 @@ export default {
             "name": "Copilot",
             "icon": "/copilot.png"
         }
+    ],
+    "otherProjects": [
+        {
+            "name": "Timezone Converter",
+            "href": "https://zen-torvalds-515ad2.netlify.app/"
+        }
     ]
 }
